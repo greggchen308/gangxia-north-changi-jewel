@@ -57,9 +57,9 @@
     box-shadow: 0 30px 80px -30px rgba(30, 40, 45, .35), 0 2px 10px rgba(30, 40, 45, .08);
     container-type: size;
     /* scroll-driven values, written by the script */
-    --gy: 0; --ga: 34%; --gb: 54%; --gs: 1.06;
-    --jy: 40; --ja: 2%; --jb: 20%; --js: 1.06;
-    --seam: 47; --m: 1;
+    --gy: 0; --ga: 26%; --gb: 46%; --gs: 1.06;
+    --jy: 24; --ja: 16%; --jb: 31%; --js: 1.04;
+    --seam: 42; --m: 1;
     --o-title: 1; --o-c1: 0; --o-c2: 0; --o-end: 0; --o-hint: 1; --o-mast: 0;
   }
 
@@ -128,7 +128,7 @@
   }
 
   .title {
-    position: absolute; left: 0; right: 0; top: 47%;
+    position: absolute; left: 0; right: 0; top: 41.5%;
     transform: translateY(-50%);
     text-align: center;
     padding: 0 6cqw;
@@ -199,7 +199,7 @@
   }
 
   .end {
-    position: absolute; left: 0; right: 0; top: 47%;
+    position: absolute; left: 0; right: 0; top: 41.5%;
     transform: translateY(-50%);
     text-align: center; padding: 0 9cqw;
     opacity: var(--o-end);
@@ -329,15 +329,15 @@
   // gy/jy: layer offset in % of stage height. ga→gb: Gangxia fades out between these
   // (in % of its height). ja→jb: Jewel fades in. gs/js: slow push-in on each image.
   const K = [
-    { p: 0.00, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 }, // composed frame
-    { p: 0.06, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 },
+    { p: 0.00, gy: 0,    ga: 26,  gb: 46,  gs: 1.06, jy: 24,  ja: 16,  jb: 31, js: 1.04 }, // composed frame
+    { p: 0.06, gy: 0,    ga: 26,  gb: 46,  gs: 1.06, jy: 24,  ja: 16,  jb: 31, js: 1.04 },
     { p: 0.26, gy: 0,    ga: 100, gb: 120, gs: 1.00, jy: 100, ja: 0,   jb: 22, js: 1.10 }, // Gangxia fills the frame
     { p: 0.40, gy: 0,    ga: 100, gb: 120, gs: 1.03, jy: 100, ja: 0,   jb: 22, js: 1.10 },
     { p: 0.54, gy: -52,  ga: 74,  gb: 100, gs: 1.05, jy: 36,  ja: 0,   jb: 24, js: 1.06 }, // descent through the mist
     { p: 0.68, gy: -100, ga: 74,  gb: 100, gs: 1.06, jy: 0,   ja: -22, jb: 0,  js: 1.00 }, // Jewel fills the frame
     { p: 0.82, gy: -100, ga: 74,  gb: 100, gs: 1.06, jy: 0,   ja: -22, jb: 0,  js: 1.03 },
-    { p: 0.96, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 }, // back to the pair
-    { p: 1.00, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 },
+    { p: 0.96, gy: 0,    ga: 26,  gb: 46,  gs: 1.06, jy: 24,  ja: 16,  jb: 31, js: 1.04 }, // back to the pair
+    { p: 1.00, gy: 0,    ga: 26,  gb: 46,  gs: 1.06, jy: 24,  ja: 16,  jb: 31, js: 1.04 },
   ];
   const ease = t => t * t * (3 - 2 * t);
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -366,7 +366,7 @@
     s.setProperty('--js', v.js.toFixed(4));
 
     // Mist sits on the seam and fades as the seam leaves the frame.
-    const seam = v.gy + (v.ga + v.gb) / 2;
+    const seam = v.gy + (v.ga + v.gb) / 2 + 5;
     s.setProperty('--seam', seam.toFixed(2));
     s.setProperty('--m', (clamp((seam + 8) / 20) * clamp((104 - seam) / 14)).toFixed(3));
 
