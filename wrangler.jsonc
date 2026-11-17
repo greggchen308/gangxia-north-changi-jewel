@@ -1,0 +1,8 @@
+{
+  // Cloudflare Workers static-assets deployment: serves the site/ folder as-is.
+  "name": "twinwonders",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./site"
+  }
+}
