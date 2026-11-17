@@ -308,7 +308,8 @@ MAT = {}
 
 
 def build_materials():
-    MAT["rib"] = principled("rib_white_steel", (0.82, 0.83, 0.82), rough=0.35, spec=0.5)
+    MAT["rib"] = principled("rib_white_steel", (0.86, 0.87, 0.86), rough=0.35, spec=0.5,
+                           emit=(1.0, 0.99, 0.97), emit_strength=0.3)
     # dome glass: almost fully transmissive, slight green tint + faint reflection
     m, nt, out = node_mat("dome_glass")
     tr = N(nt, "ShaderNodeBsdfTransparent", Color=(0.93, 0.96, 0.95, 1))
@@ -350,7 +351,7 @@ def build_materials():
                                                  (0.13, 0.25, 0.06)], translucency=0.4, gloss=0.35)
 
     # basin: dark smoked acrylic with water film
-    MAT["bowl"] = principled("bowl_dark", (0.012, 0.014, 0.015), rough=0.06, spec=0.8)
+    MAT["bowl"] = principled("bowl_dark", (0.008, 0.009, 0.01), rough=0.18, spec=0.5)
     MAT["steel"] = principled("steel", (0.6, 0.6, 0.6), rough=0.3, metal=1.0)
     m, nt, out = node_mat("rail_glass")
     tr = N(nt, "ShaderNodeBsdfTransparent", Color=(0.85, 0.9, 0.9, 1))
@@ -435,7 +436,8 @@ def water_shell_material(k):
     a = ramp(nt, comb, [(0.47, (0, 0, 0, 1)), (0.66, (1, 1, 1, 1))])
     # continuity near the top: add hz^3
     top = math_node(nt, "POWER", hz, 3.0)
-    alpha = math_node(nt, "ADD", a.outputs[0], math_node(nt, "MULTIPLY", top, 0.22))
+    alpha = math_node(nt, "MULTIPLY_ADD", a.outputs[0], math_node(nt, "MULTIPLY_ADD", top, 0.9, 1.0),
+                      math_node(nt, "MULTIPLY", top, 0.06))
     lw = N(nt, "ShaderNodeLayerWeight", Blend=0.5)
     graze = math_node(nt, "MULTIPLY_ADD", lw.outputs["Facing"], 0.9, 0.35)
     alpha = math_node(nt, "MULTIPLY", alpha, graze)
@@ -447,7 +449,7 @@ def water_shell_material(k):
     m1 = N(nt, "ShaderNodeMixShader", Fac=0.55)
     L(nt, dif.outputs[0], m1.inputs[1]); L(nt, tl.outputs[0], m1.inputs[2])
     em = N(nt, "ShaderNodeEmission", Color=(1.0, 0.985, 0.96, 1))
-    es = math_node(nt, "MULTIPLY_ADD", math_node(nt, "POWER", hz, 2.5), 1.2, 0.12)
+    es = math_node(nt, "MULTIPLY_ADD", math_node(nt, "POWER", hz, 3.0), 1.0, 0.14)
     L(nt, es, em.inputs["Strength"])
     ad = N(nt, "ShaderNodeAddShader")
     L(nt, m1.outputs[0], ad.inputs[0]); L(nt, em.outputs[0], ad.inputs[1])
@@ -1021,6 +1023,8 @@ def build_plant_library(lib):
     P["fern_b"] = lib_fern(lib, "fern_b", 32, 18, 2.2, "leaf_light")
     P["banana_a"] = lib_bigleaf(lib, "banana_a", 41, 7, 2.4, 0.42, 2.4, "oblong", "banana")
     P["alocasia_a"] = lib_bigleaf(lib, "alocasia_a", 42, 6, 1.2, 0.5, 1.2, "heart", "banana")
+    P["fg_leaf"] = lib_bigleaf(lib, "fg_leaf", 44, 5, 1.3, 0.55, 1.3, "heart", "leaf_dark")
+    P["fg_banana"] = lib_bigleaf(lib, "fg_banana", 45, 6, 2.4, 0.42, 2.4, "oblong", "palm")
     P["alocasia_b"] = lib_bigleaf(lib, "alocasia_b", 43, 5, 0.9, 0.4, 0.8, "heart", "leaf_mid")
     return P
 
@@ -1144,8 +1148,8 @@ def scatter_vegetation(P, cam, coll):
 def foreground_leaves(P, cam, coll):
     """A few big soft banana / alocasia leaves close to the lens in the bottom corners."""
     cm = cam.matrix_world
-    spots = [((-0.92, -0.97), 3.6, "banana_a", 0.7, 0.9), ((0.95, -1.0), 3.4, "alocasia_a", 1.15, 2.6),
-             ((-1.05, -0.5), 6.0, "alocasia_a", 1.1, -0.6)]
+    spots = [((-0.95, -1.0), 3.6, "fg_banana", 0.62, 0.9), ((0.97, -1.02), 3.4, "fg_leaf", 1.0, 2.6),
+             ((-1.08, -0.52), 6.0, "fg_leaf", 0.95, -0.6)]
     tan_v = 12.0 / cam.data.lens
     aspect = scene.render.resolution_x / scene.render.resolution_y
     for i, ((nx, ny), depth, kind, sc, rz) in enumerate(spots):
@@ -1239,7 +1243,7 @@ def build_camera():
     cd.clip_end = 600
     cd.dof.use_dof = True
     cd.dof.focus_distance = 74.0
-    cd.dof.aperture_fstop = 0.9
+    cd.dof.aperture_fstop = 0.45
     cd.dof.aperture_blades = 7
     cam = bpy.data.objects.new("cam", cd)
     ROOT.objects.link(cam)
