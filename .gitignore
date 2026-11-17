@@ -1,0 +1,4 @@
+blender/out/
+__pycache__/
+*.blend1
+.wrangler/

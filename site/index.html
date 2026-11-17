@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Twin Wonders · Gangxia North &amp; Jewel Changi</title>
+<meta name="description" content="A scroll in two spaces: the lattice hall of Shenzhen's Gangxia North station and the Rain Vortex of Singapore's Jewel Changi Airport.">
+<meta property="og:title" content="Twin Wonders · Gangxia North &amp; Jewel Changi">
+<meta property="og:description" content="Two neighbouring architectural marvels, one descent: Shenzhen's Gangxia North and Singapore's Jewel Changi.">
+<meta property="og:image" content="img/gangxia-north.webp">
+<meta name="theme-color" content="#f3f4f2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400&text=%E5%B2%97%E5%8E%A6%E5%8C%97%E7%AB%99%E6%B7%B1%E5%9C%B3%E6%96%B0%E5%8A%A0%E5%9D%A1%E6%98%9F%E8%80%80%E6%A8%9F%E5%AE%9C%C2%B7&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/gangxia-north.webp">
+<style>
+  :root {
+    --paper: #e9e8e3;
+    --mist: #f3f4f2;
+    --ink: #1c2226;
+    --ink-soft: #55606a;
+    --line: rgba(28, 34, 38, .22);
+    --serif: "Cormorant Garamond", "Iowan Old Style", "Times New Roman", serif;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --cjk: "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
+    --sh: 100svh;
+    --sw: min(100vw, calc(var(--sh) * 9 / 16));
+  }
+  @media (min-width: 900px) and (min-height: 560px) {
+    :root { --sh: calc(100svh - 56px); }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  /* Scroll track: the page is tall, the stage stays pinned. */
+  .track { height: 640svh; }
+  .pin {
+    position: sticky; top: 0;
+    height: 100svh;
+    display: grid; place-items: center;
+    overflow: hidden;
+  }
+  .stage {
+    position: relative;
+    width: var(--sw); height: var(--sh);
+    overflow: hidden;
+    background: linear-gradient(#f7f8f7, var(--mist) 45%, #eef1ee);
+    box-shadow: 0 30px 80px -30px rgba(30, 40, 45, .35), 0 2px 10px rgba(30, 40, 45, .08);
+    container-type: size;
+    /* scroll-driven values, written by the script */
+    --gy: 0; --ga: 34%; --gb: 54%; --gs: 1.06;
+    --jy: 40; --ja: 2%; --jb: 20%; --js: 1.06;
+    --seam: 47; --m: 1;
+    --o-title: 1; --o-c1: 0; --o-c2: 0; --o-end: 0; --o-hint: 1; --o-mast: 0;
+  }
+
+  .layer {
+    position: absolute; inset: 0;
+    will-change: transform;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  .layer img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    will-change: transform;
+  }
+  .gangxia {
+    transform: translate3d(0, calc(var(--gy) * 1%), 0);
+    -webkit-mask-image: linear-gradient(to bottom, #000 var(--ga), transparent var(--gb));
+            mask-image: linear-gradient(to bottom, #000 var(--ga), transparent var(--gb));
+  }
+  .gangxia img { object-position: 50% 0%; transform-origin: 50% 0%; transform: scale(var(--gs)); }
+  .jewel {
+    transform: translate3d(0, calc(var(--jy) * 1%), 0);
+    -webkit-mask-image: linear-gradient(to bottom, transparent var(--ja), #000 var(--jb));
+            mask-image: linear-gradient(to bottom, transparent var(--ja), #000 var(--jb));
+  }
+  .jewel img { object-position: 50% 0%; transform-origin: 50% 30%; transform: scale(var(--js)); }
+
+  /* Mist that rides the seam between the two spaces. */
+  .mist {
+    position: absolute; left: -20%; right: -20%;
+    top: calc(var(--seam) * 1%);
+    height: 34%;
+    transform: translateY(-50%);
+    opacity: var(--m);
+    pointer-events: none;
+  }
+  .mist::before, .mist::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 46% 42% at 30% 52%, rgba(255,255,255,.95), transparent 70%),
+      radial-gradient(ellipse 50% 46% at 68% 46%, rgba(255,255,255,.9), transparent 72%),
+      radial-gradient(ellipse 70% 30% at 50% 50%, rgba(246,248,247,.85), transparent 75%);
+    filter: blur(14px);
+    animation: drift 26s ease-in-out infinite alternate;
+  }
+  .mist::after { animation-duration: 38s; animation-direction: alternate-reverse; opacity: .7; }
+  @keyframes drift {
+    from { transform: translate3d(-4%, 0, 0) scale(1); }
+    to   { transform: translate3d(4%, -3%, 0) scale(1.06); }
+  }
+
+  /* Typography over the stage */
+  .type { position: absolute; inset: 0; pointer-events: none; }
+  .label {
+    font: 500 clamp(9px, 1.25cqh, 12px)/1.4 var(--sans);
+    letter-spacing: .24em; text-transform: uppercase;
+  }
+  .cjk { font-family: var(--cjk); letter-spacing: .18em; }
+
+  .mast {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: max(4.2cqw, env(safe-area-inset-top)) 5.5cqw 0;
+    display: flex; justify-content: space-between; align-items: baseline;
+    opacity: var(--o-mast);
+    color: var(--ink);
+    text-shadow: 0 0 12px rgba(255,255,255,.9), 0 0 3px rgba(255,255,255,.8);
+  }
+
+  .title {
+    position: absolute; left: 0; right: 0; top: 47%;
+    transform: translateY(-50%);
+    text-align: center;
+    padding: 0 6cqw;
+    opacity: var(--o-title);
+  }
+  .title .label { color: var(--ink-soft); }
+  .title h1 {
+    margin: 1.6cqh 0 1.4cqh;
+    font: 300 clamp(40px, 15.5cqw, 92px)/.92 var(--serif);
+    letter-spacing: -.01em;
+  }
+  .title h1 em { font-style: italic; font-weight: 300; }
+  .title .pair {
+    display: flex; justify-content: center; align-items: center; gap: 3cqw;
+    color: var(--ink);
+  }
+  .title .pair i { width: 7cqw; height: 1px; background: var(--line); }
+  .title .zh { margin-top: 1cqh; font-size: clamp(11px, 1.7cqh, 15px); color: var(--ink-soft); }
+
+  .hint {
+    position: absolute; left: 0; right: 0;
+    bottom: max(3.2cqh, env(safe-area-inset-bottom));
+    display: grid; justify-items: center; gap: 1.2cqh;
+    color: #fff; opacity: var(--o-hint);
+    text-shadow: 0 1px 10px rgba(0,0,0,.45);
+  }
+  .hint i {
+    width: 1px; height: 4.5cqh; background: linear-gradient(#fff, transparent);
+    animation: nudge 2.4s ease-in-out infinite;
+    transform-origin: top;
+  }
+  @keyframes nudge { 0%,100% { transform: scaleY(.35); opacity: .5; } 50% { transform: scaleY(1); opacity: 1; } }
+
+  .cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 0 6.5cqw max(5cqh, env(safe-area-inset-bottom));
+  }
+  .cap h2 {
+    margin: 1.2cqh 0 .4cqh;
+    font: 300 clamp(30px, 10.5cqw, 62px)/1 var(--serif);
+    letter-spacing: -.005em;
+  }
+  .cap .zh { font-size: clamp(11px, 1.7cqh, 15px); }
+  .cap p {
+    margin: 1.8cqh 0 0; max-width: 34em;
+    font: 400 clamp(15px, 2.35cqh, 21px)/1.36 var(--serif);
+  }
+  .facts {
+    display: grid; grid-template-columns: repeat(3, auto); justify-content: start;
+    gap: 0 5cqw; margin: 2.4cqh 0 0; padding: 1.6cqh 0 0;
+    border-top: 1px solid currentColor;
+    border-image: linear-gradient(to right, currentColor, transparent) 1;
+  }
+  .facts div { display: grid; gap: .3cqh; }
+  .facts b { font: 400 clamp(17px, 2.9cqh, 26px)/1 var(--serif); }
+  .facts span { font: 500 clamp(8px, 1.05cqh, 10.5px)/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; opacity: .75; }
+
+  .c1 { opacity: var(--o-c1); color: var(--ink); }
+  .c1::before {
+    content: ""; position: absolute; inset: -14cqh 0 0; z-index: -1;
+    background: linear-gradient(to top, rgba(244,246,245,.94) 55%, rgba(244,246,245,0));
+  }
+  .c2 { opacity: var(--o-c2); color: #fbfdfa; }
+  .c2::before {
+    content: ""; position: absolute; inset: -16cqh 0 0; z-index: -1;
+    background: linear-gradient(to top, rgba(10,24,16,.86) 45%, rgba(10,24,16,0));
+  }
+
+  .end {
+    position: absolute; left: 0; right: 0; top: 47%;
+    transform: translateY(-50%);
+    text-align: center; padding: 0 9cqw;
+    opacity: var(--o-end);
+  }
+  .end p {
+    margin: 0 0 1.8cqh;
+    font: italic 300 clamp(22px, 7.4cqw, 44px)/1.08 var(--serif);
+  }
+  .end .label { color: var(--ink-soft); letter-spacing: .2em; }
+  .end small { display: block; margin-top: .8cqh; font: 400 clamp(8px, 1.05cqh, 10.5px)/1.4 var(--sans); letter-spacing: .08em; color: var(--ink-soft); }
+
+  /* Chapter index: inside the stage edge on phones, beside it on wide screens */
+  .index {
+    position: fixed; z-index: 5;
+    top: 50%; right: calc(50vw - var(--sw) / 2 + 10px);
+    transform: translateY(-50%);
+    display: grid; gap: 14px; margin: 0; padding: 0; list-style: none;
+  }
+  .index button {
+    all: unset; cursor: pointer;
+    display: flex; align-items: center; gap: 12px; flex-direction: row-reverse;
+    padding: 4px 0;
+  }
+  .index button::before {
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 0 1px rgba(28,34,38,.45);
+    transition: transform .3s, background .3s;
+  }
+  .index button[aria-current="true"]::before { background: var(--ink); transform: scale(1.7); }
+  .index button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+  .index span { display: none; }
+  .aside { display: none; }
+
+  @media (min-width: 900px) and (min-height: 560px) {
+    .index { right: auto; left: calc(50vw + var(--sw) / 2 + 36px); gap: 18px; }
+    .index button { flex-direction: row; }
+    .index button::before { background: transparent; }
+    .index span {
+      display: block; color: var(--ink-soft);
+      font: 500 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase;
+      transition: color .3s;
+    }
+    .index button[aria-current="true"] span, .index button:hover span { color: var(--ink); }
+    .aside {
+      display: block; position: fixed; z-index: 5;
+      right: calc(50vw + var(--sw) / 2 + 36px); bottom: 44px;
+      text-align: right; color: var(--ink-soft);
+    }
+    .aside strong { display: block; margin-bottom: 8px; font: 400 26px/1 var(--serif); color: var(--ink); letter-spacing: 0; text-transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mist::before, .mist::after, .hint i { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="track" id="track">
+  <div class="pin">
+    <div class="stage" id="stage">
+      <div class="layer jewel"><img src="img/jewel-rain-vortex.webp" alt="3D rendering of the Rain Vortex at Jewel Changi Airport: a waterfall dropping from a glass dome's oculus into a terraced tropical forest, with a people-mover train crossing beside it." decoding="async"></div>
+      <div class="layer gangxia"><img src="img/gangxia-north.webp" alt="3D rendering of Gangxia North metro station in Shenzhen: a vast white hall under a geometric lattice ceiling, with a train at the platform, escalators and people moving." decoding="async"></div>
+      <div class="mist" aria-hidden="true"></div>
+
+      <div class="type">
+        <div class="mast label"><span>Twin Wonders</span><span id="chapter">01 / 02</span></div>
+
+        <header class="title">
+          <div class="label">Two neighbours, one region</div>
+          <h1>Twin <em>Wonders</em></h1>
+          <div class="pair label"><span>Gangxia North</span><i></i><span>Jewel Changi</span></div>
+          <div class="zh cjk">岗厦北 · 星耀樟宜</div>
+        </header>
+
+        <div class="hint label" aria-hidden="true"><span id="hint">Scroll</span><i></i></div>
+
+        <section class="cap c1" aria-label="Gangxia North, Shenzhen">
+          <div class="label">01 · Shenzhen <span class="cjk">深圳</span></div>
+          <h2>Gangxia North</h2>
+          <div class="zh cjk">岗厦北站</div>
+          <p>A white lattice spans the hall where four metro lines meet, and a skylight the city calls the Shenzhen Eye draws daylight down to the platforms.</p>
+          <div class="facts">
+            <div><b>4 lines</b><span>2 · 10 · 11 · 14</span></div>
+            <div><b>Oct 2022</b><span>Atrium opened</span></div>
+            <div><b>Shenzhen Eye</b><span>The skylight</span></div>
+          </div>
+        </section>
+
+        <section class="cap c2" aria-label="Jewel Changi Airport, Singapore">
+          <div class="label">02 · Singapore <span class="cjk">新加坡</span></div>
+          <h2>Jewel Changi</h2>
+          <div class="zh cjk">星耀樟宜</div>
+          <p>Under a dome of glass and steel, rain falls forty metres through an oculus into a terraced forest, while the airport's people-mover glides past.</p>
+          <div class="facts">
+            <div><b>40 m</b><span>Rain Vortex</span></div>
+            <div><b>Apr 2019</b><span>Opened</span></div>
+            <div><b>Safdie</b><span>Architects</span></div>
+          </div>
+        </section>
+
+        <footer class="end">
+          <p>Two halls of passage,<br>one shared ambition.</p>
+          <div class="label">GC Artifacts</div>
+          <small>Scenes modelled and rendered in Blender. Illustrative, not photographs.</small>
+        </footer>
+      </div>
+    </div>
+  </div>
+</main>
+
+<ol class="index" id="index" aria-label="Chapters">
+  <li><button type="button" data-p="0"><span>Overview</span></button></li>
+  <li><button type="button" data-p="0.33"><span>Gangxia North</span></button></li>
+  <li><button type="button" data-p="0.75"><span>Jewel Changi</span></button></li>
+  <li><button type="button" data-p="1"><span>Coda</span></button></li>
+</ol>
+<div class="aside label"><strong>Twin Wonders</strong>A scroll in two spaces</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const chapter = document.getElementById('chapter');
+  const buttons = [...document.querySelectorAll('#index button')];
+
+  // Keyframes along scroll progress p (0..1).
+  // gy/jy: layer offset in % of stage height. ga→gb: Gangxia fades out between these
+  // (in % of its height). ja→jb: Jewel fades in. gs/js: slow push-in on each image.
+  const K = [
+    { p: 0.00, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 }, // composed frame
+    { p: 0.06, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 },
+    { p: 0.26, gy: 0,    ga: 100, gb: 120, gs: 1.00, jy: 100, ja: 0,   jb: 22, js: 1.10 }, // Gangxia fills the frame
+    { p: 0.40, gy: 0,    ga: 100, gb: 120, gs: 1.03, jy: 100, ja: 0,   jb: 22, js: 1.10 },
+    { p: 0.54, gy: -52,  ga: 74,  gb: 100, gs: 1.05, jy: 36,  ja: 0,   jb: 24, js: 1.06 }, // descent through the mist
+    { p: 0.68, gy: -100, ga: 74,  gb: 100, gs: 1.06, jy: 0,   ja: -22, jb: 0,  js: 1.00 }, // Jewel fills the frame
+    { p: 0.82, gy: -100, ga: 74,  gb: 100, gs: 1.06, jy: 0,   ja: -22, jb: 0,  js: 1.03 },
+    { p: 0.96, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 }, // back to the pair
+    { p: 1.00, gy: 0,    ga: 34,  gb: 54,  gs: 1.06, jy: 40,  ja: 2,   jb: 20, js: 1.06 },
+  ];
+  const ease = t => t * t * (3 - 2 * t);
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  // 0 outside [a,d], 1 inside [b,c], eased ramps between.
+  const window4 = (p, a, b, c, d) => ease(clamp((p - a) / (b - a || 1e-6))) * (1 - ease(clamp((p - c) / (d - c || 1e-6))));
+
+  function at(p) {
+    let i = 0;
+    while (i < K.length - 2 && p > K[i + 1].p) i++;
+    const a = K[i], b = K[i + 1];
+    const t = ease(clamp((p - a.p) / (b.p - a.p)));
+    const out = {};
+    for (const k of ['gy', 'ga', 'gb', 'gs', 'jy', 'ja', 'jb', 'js']) out[k] = a[k] + (b[k] - a[k]) * t;
+    return out;
+  }
+
+  function render(p) {
+    const v = at(p), s = stage.style;
+    s.setProperty('--gy', v.gy.toFixed(3));
+    s.setProperty('--ga', v.ga.toFixed(2) + '%');
+    s.setProperty('--gb', v.gb.toFixed(2) + '%');
+    s.setProperty('--gs', v.gs.toFixed(4));
+    s.setProperty('--jy', v.jy.toFixed(3));
+    s.setProperty('--ja', v.ja.toFixed(2) + '%');
+    s.setProperty('--jb', v.jb.toFixed(2) + '%');
+    s.setProperty('--js', v.js.toFixed(4));
+
+    // Mist sits on the seam and fades as the seam leaves the frame.
+    const seam = v.gy + (v.ga + v.gb) / 2;
+    s.setProperty('--seam', seam.toFixed(2));
+    s.setProperty('--m', (clamp((seam + 8) / 20) * clamp((104 - seam) / 14)).toFixed(3));
+
+    s.setProperty('--o-title', (1 - ease(clamp((p - 0.05) / 0.08))).toFixed(3));
+    s.setProperty('--o-hint',  (1 - ease(clamp((p - 0.02) / 0.06))).toFixed(3));
+    s.setProperty('--o-c1',    window4(p, 0.20, 0.28, 0.40, 0.46).toFixed(3));
+    s.setProperty('--o-c2',    window4(p, 0.62, 0.70, 0.82, 0.87).toFixed(3));
+    s.setProperty('--o-end',   ease(clamp((p - 0.93) / 0.05)).toFixed(3));
+    s.setProperty('--o-mast',  window4(p, 0.16, 0.24, 0.84, 0.90).toFixed(3));
+
+    chapter.textContent = p < 0.52 ? '01 / 02' : '02 / 02';
+    const active = p < 0.14 ? 0 : p < 0.54 ? 1 : p < 0.90 ? 2 : 3;
+    buttons.forEach((b, i) => b.setAttribute('aria-current', i === active ? 'true' : 'false'));
+  }
+
+  const max = () => document.documentElement.scrollHeight - window.innerHeight;
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      render(clamp(window.scrollY / Math.max(1, max())));
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  buttons.forEach(b => b.addEventListener('click', () => {
+    window.scrollTo({ top: parseFloat(b.dataset.p) * max(), behavior: calm ? 'auto' : 'smooth' });
+  }));
+
+  if (matchMedia('(pointer: coarse)').matches) document.getElementById('hint').textContent = 'Swipe up';
+  render(clamp(window.scrollY / Math.max(1, max())));
+})();
+</script>
+</body>
+</html>
